@@ -27,8 +27,35 @@ class NeuralNetwork:
         pass
 
     # train the neural network
-    def train ():
-        pass
+    def train (self, inputsList, targetsList):
+
+        # convert inputs list to 2d array
+        inputs = numpy.array (inputsList, ndmin=2).T
+        targets = numpy.array (targetsList, ndmin=2).T
+
+        # calculate signals into hidden layer
+        hiddenInputs = numpy.dot (self.wih, inputs)
+
+        # calculate the signals emerging from the hidden layer
+        hiddenOutputs = self.activationFunction (hiddenInputs)
+
+        # calculate signals into final output layer
+        finalInputs = numpy.dot (self.who, hiddenOutputs)
+
+        # calculate the signals emerging from the final output layer
+        finalOutputs = self.activationFunction (finalInputs)
+
+        # output layer error is the target - actual
+        outputErrors = targets - finalOutputs
+
+        # hidden layer error is the outputErrors, split by weights, recombined at hidden nodes
+        hiddenErrors = numpy.dot (self.who.T, outputErrors)
+
+        # update the weights for the links between the hidden and output layers
+        self.who += self.lr * numpy.dot ((outputErrors * finalOutputs * (1.0 - finalOutputs)), numpy.transpose (hiddenOutputs))
+
+        # update the weights for the links between the input and hidden layers
+        self.wih += self.lr * numpy.dot ((hiddenErrors * hiddenOutputs * (1.0 - hiddenOutputs)), numpy.transpose (inputs))
 
     # query the neural network
     def query (self, inputsList):
